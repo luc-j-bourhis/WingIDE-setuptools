@@ -27,6 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
 import os, sys
+import fnmatch
 import wingapi
 from wingutils import location
 from wingutils import encoding_utils
@@ -172,6 +173,13 @@ class _CDistutilsView(wingview.CViewController):
                          wgtk.NoObjCallback(self._Build))
         self.fBuildButton.set_tip(_('Build in-place'))
 
+        self.fCleanButton = wgtk.IconButton(
+            icon='wingide-trash', relief=wgtk.RELIEF_NONE,
+            border_width=0, focus_on_click=False)
+        wgtk.gui_connect(self.fCleanButton, 'clicked',
+                         wgtk.NoObjCallback(self._Clean))
+        self.fCleanButton.set_tip(_('Clean'))
+
         self.fTerminateButton = wgtk.IconButton(
             icon='wingide-os-commands-stop', relief=wgtk.RELIEF_NONE,
             border_width=0, focus_on_click=False)
@@ -189,6 +197,7 @@ class _CDistutilsView(wingview.CViewController):
 
         top_hbox = wgtk.HBox(visible=True)
         top_hbox.pack_start(self.fBuildButton, expand=False)
+        top_hbox.pack_start(self.fCleanButton, expand=False)
         top_hbox.pack_start(self.fTerminateButton, expand=False)
         top_hbox.pack_start(self.fEditButton, expand=False)
 
@@ -302,6 +311,7 @@ class _CDistutilsView(wingview.CViewController):
             child_pwd=self.projectDir,
             io_encoding=encoding, buffer_size=1)
         self.fBuildButton.setEnabled(False)
+        self.fCleanButton.setEnabled(False)
         self.fTerminateButton.setEnabled(True)
         self.fStatus.set_text("Running...")
 
@@ -323,6 +333,7 @@ class _CDistutilsView(wingview.CViewController):
                     m.group('filename', 'line', 'column', 'message'))
             self.fErrorList.set_contents(contents)
             self.fBuildButton.setEnabled(True)
+            self.fCleanButton.setEnabled(True)
             self.fTerminateButton.setEnabled(False)
             self.fStatus.set_text('')
 
@@ -349,6 +360,10 @@ class _CDistutilsView(wingview.CViewController):
     def _Build(self):
         """ Build in-place """
         self._Execute(setup_py_args=("build_ext", "-i"))
+
+    def _Clean(self):
+        """ Remove all files produced by builds so far """
+        self._Execute(setup_py_args=("clean", "-a"))
 
     def _Terminate(self):
         """ Called when the terminate button is clicked """

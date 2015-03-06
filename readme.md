@@ -4,7 +4,11 @@
 
 ## Distutils panel
 
-This is a panel to run Distutils `setup.py` and to collect errors and warnings. When the "Build" button is pressed, the following command is executed in the directory of the project file:
+This is a panel to run Distutils `setup.py` and to collect errors and warnings.
+
+### Build button
+
+When the "Build" button is pressed, the following command is executed in the directory of the project file:
 
 ```
     python -u setup.py build_ext -i
@@ -23,4 +27,12 @@ The panel currently detects and finds the following type of errors:
 - clang/gcc errors.
 
 MSVC is not supported yet.
+
+### Clean button
+
+When the "Clean" button is pressed, the following command is executed in the directory of the project file:
+
+```
+    python -u setup.py clean -a
+```
 
