@@ -255,7 +255,7 @@ class _CDistutilsView(wingview.CViewController):
                 guimgr.attribs.kKeyboardOverrides).iteritems() }
         return overrides.get(self.distutils_build_in_place_action, '')
 
-    def _Execute(self, *args):
+    def _Execute(self, setup_py_args, postprocess=None):
         """ Execute setup.py with the given command line arguments """
         import proj.project
 
@@ -297,7 +297,7 @@ class _CDistutilsView(wingview.CViewController):
         self.output = ""
         self.fLog._Clear()
         self.child_process = spawn.CChildProcess(
-            cmd + args,
+            cmd + setup_py_args,
             env=my_proj.GetEnvironment(setupDotPy),
             child_pwd=self.projectDir,
             io_encoding=encoding, buffer_size=1)
@@ -311,6 +311,8 @@ class _CDistutilsView(wingview.CViewController):
             self.fLogTabLabel.setStyleSheet("QLabel { color : red; }")
 
         def terminated(child_process):
+            if postprocess is not None:
+                postprocess()
             self.fLogTabLabel.setStyleSheet("QLabel { color : black; }")
             contents = []
             for m in self.python_error_pattern.finditer(self.output):
@@ -346,7 +348,7 @@ class _CDistutilsView(wingview.CViewController):
 
     def _Build(self):
         """ Build in-place """
-        self._Execute("build_ext", "-i")
+        self._Execute(setup_py_args=("build_ext", "-i"))
 
     def _Terminate(self):
         """ Called when the terminate button is clicked """
