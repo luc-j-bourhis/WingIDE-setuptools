@@ -140,19 +140,6 @@ class _CDistutilsView(wingview.CViewController):
 
         self.__CreateGui()
 
-        # Pre-compute what's needed to run distutils setup.py
-        proj = wingapi.gApplication.GetProject()
-        if proj is None:
-            return
-        self.projectDir = os.path.dirname(proj.GetFilename())
-        self.setupDotPy = os.path.join(self.projectDir, 'setup.py')
-        self.buildCmd = [
-            proj.GetPythonExecutable(self.setupDotPy), "-u",
-            "setup.py", "build_ext", "-i" ]
-        self.env = proj.GetEnvironment(self.setupDotPy)
-        self.child_process = None
-        self.output = ""
-
     def _destroy_impl(self):
         wgtk.Destroy(self.fErrorList)
 
@@ -268,8 +255,8 @@ class _CDistutilsView(wingview.CViewController):
                 guimgr.attribs.kKeyboardOverrides).iteritems() }
         return overrides.get(self.distutils_build_in_place_action, '')
 
-    def _Build(self):
-        """ Called when the build button is clicked """
+    def _Execute(self, *args):
+        """ Execute setup.py with the given command line arguments """
         import proj.project
 
         my_proj = wingapi.gApplication.GetProject()
@@ -279,13 +266,17 @@ class _CDistutilsView(wingview.CViewController):
                 text='You need to open a project first.',
                 sheet=True)
             return
-        if not os.path.isfile(self.setupDotPy):
+        self.projectDir = os.path.dirname(my_proj.GetFilename())
+
+        setupDotPy = os.path.join(self.projectDir, 'setup.py')
+        if not os.path.isfile(setupDotPy):
             wingapi.gApplication.ShowMessageDialog(
                 title='Distutils Build',
                 text='You need to create a file setup.py in your project '
                      'directory first.',
                 sheet=True)
             return
+
         saveMgr = self.fSingletons.fGuiMgr.fSaveMgr
         savable_list = []
         for savable in saveMgr.GetItemsToSave():
@@ -302,10 +293,13 @@ class _CDistutilsView(wingview.CViewController):
         encoding = encoding_utils.kDefaultConsoleOutputEncoding
 
         # buffer_size = 1 for for line mode
+        cmd = (my_proj.GetPythonExecutable(setupDotPy), "-u", "setup.py")
         self.output = ""
         self.fLog._Clear()
         self.child_process = spawn.CChildProcess(
-            self.buildCmd, env=self.env, child_pwd=self.projectDir,
+            cmd + args,
+            env=my_proj.GetEnvironment(setupDotPy),
+            child_pwd=self.projectDir,
             io_encoding=encoding, buffer_size=1)
         self.fBuildButton.setEnabled(False)
         self.fTerminateButton.setEnabled(True)
@@ -349,6 +343,10 @@ class _CDistutilsView(wingview.CViewController):
         except OSError:
             self.child_process.destroy()
             self.child_process = None
+
+    def _Build(self):
+        """ Build in-place """
+        self._Execute("build_ext", "-i")
 
     def _Terminate(self):
         """ Called when the terminate button is clicked """
