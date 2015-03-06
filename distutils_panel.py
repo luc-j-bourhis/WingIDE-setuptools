@@ -307,6 +307,7 @@ class _CDistutilsView(wingview.CViewController):
         self.child_process = spawn.CChildProcess(
             self.buildCmd, env=self.env, child_pwd=self.projectDir,
             io_encoding=encoding, buffer_size=1)
+        self.fBuildButton.setEnabled(False)
         self.fTerminateButton.setEnabled(True)
         self.fStatus.set_text("Running...")
 
@@ -325,6 +326,7 @@ class _CDistutilsView(wingview.CViewController):
                 contents.append(
                     m.group('filename', 'line', 'column', 'message'))
             self.fErrorList.set_contents(contents)
+            self.fBuildButton.setEnabled(True)
             self.fTerminateButton.setEnabled(False)
             self.fStatus.set_text('')
 
