@@ -146,7 +146,7 @@ class _CDistutilsView(wingview.CViewController):
             return
         self.projectDir = os.path.dirname(proj.GetFilename())
         self.setupDotPy = os.path.join(self.projectDir, 'setup.py')
-        self.cmd = [
+        self.buildCmd = [
             proj.GetPythonExecutable(self.setupDotPy), "-u",
             "setup.py", "build_ext", "-i" ]
         self.env = proj.GetEnvironment(self.setupDotPy)
@@ -178,12 +178,12 @@ class _CDistutilsView(wingview.CViewController):
     def __CreateGui(self):
         self.fNotebook = wgtk.PopupNotebook()
 
-        self.fExecuteButton = wgtk.IconButton(
+        self.fBuildButton = wgtk.IconButton(
             icon=wgtk.STOCK_EXECUTE, relief=wgtk.RELIEF_NONE,
             border_width=0, focus_on_click=False)
-        wgtk.gui_connect(self.fExecuteButton, 'clicked',
+        wgtk.gui_connect(self.fBuildButton, 'clicked',
                          wgtk.NoObjCallback(self._Build))
-        self.fExecuteButton.set_tip(_('Build in-place'))
+        self.fBuildButton.set_tip(_('Build in-place'))
 
         self.fTerminateButton = wgtk.IconButton(
             icon='wingide-os-commands-stop', relief=wgtk.RELIEF_NONE,
@@ -201,7 +201,7 @@ class _CDistutilsView(wingview.CViewController):
         self.fEditButton.set_tip(_("Choose Keyboard Shortcut"))
 
         top_hbox = wgtk.HBox(visible=True)
-        top_hbox.pack_start(self.fExecuteButton, expand=False)
+        top_hbox.pack_start(self.fBuildButton, expand=False)
         top_hbox.pack_start(self.fTerminateButton, expand=False)
         top_hbox.pack_start(self.fEditButton, expand=False)
 
@@ -305,7 +305,7 @@ class _CDistutilsView(wingview.CViewController):
         self.output = ""
         self.fLog._Clear()
         self.child_process = spawn.CChildProcess(
-            self.cmd, env=self.env, child_pwd=self.projectDir,
+            self.buildCmd, env=self.env, child_pwd=self.projectDir,
             io_encoding=encoding, buffer_size=1)
         self.fTerminateButton.setEnabled(True)
         self.fStatus.set_text("Running...")
