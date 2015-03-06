@@ -16,4 +16,11 @@ where `python` is the Python executable for the current project. It is therefore
 
 - the full text output by the build command is also displayed in another tab.
 
-TODO: at the moment, only detects Python errors resulting from an incorrect `setup.py` and [Cython](http://cython.org) errors; C/C++ compiler error patterns are different for different compilers but one can guess the compiler in use by looking at the output of the command above, so it should be possible.
+The panel currently detects and finds the following type of errors:
+
+- Python errors, resulting from an incorrect `setup.py`,
+- [Cython](http://cython.org) errors, and
+- clang/gcc errors.
+
+MSVC is not supported yet.
+
