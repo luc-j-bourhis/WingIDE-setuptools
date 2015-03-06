@@ -266,7 +266,7 @@ class _CDistutilsView(wingview.CViewController):
             action: key
             for key, action in self.fSingletons.fFileAttribMgr.GetValue(
                 guimgr.attribs.kKeyboardOverrides).iteritems() }
-        return overrides[self.distutils_build_in_place_action]
+        return overrides.get(self.distutils_build_in_place_action, '')
 
     def _Build(self):
         """ Called when the build button is clicked """
