@@ -215,6 +215,7 @@ class _CDistutilsView(wingview.CViewController):
 
         self.fLog = cap_oscommands.CConsoleView(self.fSingletons)
         self.fLogTabLabel = wgtk.QLabel('   Log   ')
+        self.fLog._fScint.set_wrap_mode(True)
         self.fLogTabLabel.setToolTip('Log of the last build')
         self.fNotebook.append_page(self.fLog.fGtkWidget, self.fLogTabLabel)
 
