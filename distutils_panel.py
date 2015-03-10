@@ -360,6 +360,7 @@ class _CDistutilsView(wingview.CViewController):
 
     def _Build(self):
         """ Build in-place """
+        self.fErrorList.set_contents([])
         self._Execute(setup_py_args=("build_ext", "-i"))
 
     def _Clean(self):
