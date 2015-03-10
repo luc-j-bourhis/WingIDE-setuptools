@@ -204,6 +204,8 @@ class _CDistutilsView(wingview.CViewController):
         tree = wgtk.SimpleTree(
             [_("File"), _("Line"), _("Column"), _("Message")],
             plain_text=True)
+        for i in (0, 1):
+            tree.hideColumn(i)
         wgtk.gui_connect(
             tree, 'button-press-event', self._OnClickedErrorItem)
         wgtk.InitialShow(tree)
