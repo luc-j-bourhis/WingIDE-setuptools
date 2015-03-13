@@ -188,18 +188,10 @@ class _CDistutilsView(wingview.CViewController):
         self.fTerminateButton.set_tip(_('Terminate build'))
         self.fTerminateButton.setEnabled(False)
 
-        self.fEditButton = wgtk.IconButton(
-            icon=wgtk.STOCK_EDIT, relief = wgtk.RELIEF_NONE,
-            border_width=0, focus_on_click=False)
-        wgtk.gui_connect(self.fEditButton, 'clicked',
-                         wgtk.NoObjCallback(self._ChooseKeyboardShortcut))
-        self.fEditButton.set_tip(_("Choose Keyboard Shortcut"))
-
         top_hbox = wgtk.HBox(visible=True)
         top_hbox.pack_start(self.fBuildButton, expand=False)
         top_hbox.pack_start(self.fCleanButton, expand=False)
         top_hbox.pack_start(self.fTerminateButton, expand=False)
-        top_hbox.pack_start(self.fEditButton, expand=False)
 
         tree = wgtk.SimpleTree(
             [_("File"), _("Line"), _("Column"), _("Message")],
@@ -230,16 +222,6 @@ class _CDistutilsView(wingview.CViewController):
 
         self._SetGtkWidget(vbox)
 
-        self.fKeyBindingInput = guimgr.keyboard.CKeyStrokeEntry()
-        self.fKeyBindingInput.setText(self.GetKeyBinding())
-        self.fKeyBindingInput.textEdited.connect(self.SetKeyBinding)
-        self.fDialog = wgtk.QDialog(self.fGtkWidget)
-        dialogLayout = wgtk.QVBoxLayout()
-        dialogLayout.addWidget(wgtk.QLabel(
-            "Key binding for launching build:"))
-        dialogLayout.addWidget(self.fKeyBindingInput)
-        self.fDialog.setLayout(dialogLayout)
-
     python_error_pattern = re.compile(
         r''' ^ Traceback .*? File \s+ " (?P<filename> [^"\n]+?) " , \s+
                 line \s+ (?P<line>\d+) .*?
@@ -252,20 +234,6 @@ class _CDistutilsView(wingview.CViewController):
 
     distutils_build_in_place_action = '{}()'.format(
         distutils_build_in_place.__name__)
-
-    def SetKeyBinding(self, text):
-        keymap = self.fSingletons.fFileAttribMgr.GetValue(
-            guimgr.attribs.kKeyboardOverrides)
-        keymap[text] = self.distutils_build_in_place_action
-        self.fSingletons.fFileAttribMgr.SetValue(
-            guimgr.attribs.kKeyboardOverrides, keymap)
-
-    def GetKeyBinding(self):
-        overrides = {
-            action: key
-            for key, action in self.fSingletons.fFileAttribMgr.GetValue(
-                guimgr.attribs.kKeyboardOverrides).iteritems() }
-        return overrides.get(self.distutils_build_in_place_action, '')
 
     def _Execute(self, setup_py_args, postprocess=None):
         """ Execute setup.py with the given command line arguments """
@@ -374,11 +342,6 @@ class _CDistutilsView(wingview.CViewController):
         self.child_process.Kill()
         self.fTerminateButton.setEnabled(False)
         self.fStatus.set_text('')
-
-    def _ChooseKeyboardShortcut(self):
-        """ Called when the "pen" button is clicked """
-        self.fDialog.show()
-        self.fDialog.raise_()
 
     def _OnClickedErrorItem(self, tree, event):
         """ Called when the user clicks a line in the error list """
