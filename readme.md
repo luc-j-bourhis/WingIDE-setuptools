@@ -4,7 +4,7 @@
 
 ## Setuptools panel
 
-This is a panel to run Setuptools (or Distutils) `setup.py` and to collect errors and warnings. At the moment it is limited to in-place builds.
+This is a panel to build Python extensions written in C or with Cython using Setuptools (or Distutils) `setup.py` and to collect errors and warnings. At the moment it is limited to in-place builds.
 
 ### Build button
 
