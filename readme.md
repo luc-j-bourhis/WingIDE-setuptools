@@ -8,9 +8,9 @@ This is a panel to run Distutils `setup.py` and to collect errors and warnings.
 
 ### Build button
 
-When the "Build" button is pressed, the following command is executed in the directory of the project file:
+When the `Build` button is pressed, the following command is executed in the directory of the project file:
 
-```
+```bash
     python -u setup.py build_ext -i
 ```
 
@@ -30,9 +30,17 @@ MSVC is not supported yet.
 
 ### Clean button
 
-When the "Clean" button is pressed, the following command is executed in the directory of the project file:
+When the `Clean` button is pressed, the following command is executed in the directory of the project file:
 
-```
+```bash
     python -u setup.py clean -a
 ```
+
+### Commands
+
+This panel add the following commands:
+
+- `distutils_build_in_place`: this is the same action performed by the `Build` button.
+
+A keyboard shortcut may be assigned to any of them in the usual way, through `Preferences > Keyboard > Custom Key Bindings`.
 
