@@ -1,5 +1,5 @@
 """
-Distutils integration for Wing IDE.
+Setuptools integration for Wing IDE.
 
 Copyright (c) 2015, Luc J. Bourhis <luc_j_bourhis@mac.com>
 
@@ -45,22 +45,22 @@ _AI = wingapi.CArgInfo
 
 # Write any text which may need to be translated as _("....")
 import gettext
-_ = gettext.translation('scripts_distutils_panel',
+_ = gettext.translation('scripts_setuptools_panel',
                         fallback = 1).ugettext
 
 # This special attribute is used so that the script manager can also
 # translate docstrings for the commands found here
-_i18n_module = 'scripts_distutils_panel'
+_i18n_module = 'scripts_setuptools_panel'
 
 # Start of commands
 
-def distutils_build_in_place():
-    """ Build in-place using Distutils """
+def setuptools_build_in_place():
+    """ Build in-place using Setuptools """
     view = wingapi.gApplication.fSingletons.fGuiMgr.ShowPanel(_kPanelID)
     view._Build()
 
-def distutils_clean_all():
-    """ Clean all files produced by `distutils_build_in_place` """
+def setuptools_clean_all():
+    """ Clean all files produced by `setuptools_build_in_place` """
     view = wingapi.gApplication.fSingletons.fGuiMgr.ShowPanel(_kPanelID)
     view._Clean()
 
@@ -72,9 +72,9 @@ def distutils_clean_all():
 # are multiple panel definitions with the same base name (in which case
 # Wing-defined panels win over user-defined panels and otherwise the
 # last user-defined panel type wins when referred to w/o the uniquifier).
-_kPanelID = 'distutils_panel#02EFWRQK9X24'
+_kPanelID = 'setuptools_panel#02EFWRQK9X24'
 
-class _CDistutilsPanelDefn(dockview.CPanelDefn):
+class _CSetuptoolsPanelDefn(dockview.CPanelDefn):
     """Panel definition for the project manager"""
 
     def __init__(self, singletons):
@@ -85,31 +85,31 @@ class _CDistutilsPanelDefn(dockview.CPanelDefn):
                              size=(350, 1000))
 
     def _CreateView(self):
-        return _CDistutilsView(self.fSingletons)
+        return _CSetuptoolsView(self.fSingletons)
 
     def _GetLabel(self, panel_instance):
         """Get (label, prefix, suffix) for the display label to use for the
         given panel instance"""
-        return _('Distutils'), '', ''
+        return _('Setuptools'), '', ''
 
     def _GetTitle(self, panel_instance):
         """Get full title for the given panel instance"""
-        return _('Distutils Panel')
+        return _('Setuptools Panel')
 
-class _CDistutilsViewCommands(commandmgr.CClassCommandMap):
+class _CSetuptoolsViewCommands(commandmgr.CClassCommandMap):
 
     kDomain = 'user'
-    kPackage = 'distutils_panel'
+    kPackage = 'setuptools_panel'
 
     def __init__(self, singletons, view):
         commandmgr.CClassCommandMap.__init__(self, i18n_module=_i18n_module)
-        assert isinstance(view, _CDistutilsView)
+        assert isinstance(view, _CSetuptoolsView)
         self.fSingletons = singletons
         self.__fView = view
 
 
-class _CDistutilsView(wingview.CViewController):
-    """ A panel to run Distutils setup.py and collect errors
+class _CSetuptoolsView(wingview.CViewController):
+    """ A panel to run Setuptools setup.py and collect errors
 
         When the "Build" button is pressed, the following command is
         executed in the directory of the project file:
@@ -142,7 +142,7 @@ class _CDistutilsView(wingview.CViewController):
         # External managers
         self.fSingletons = singletons
 
-        self.__fCmdMap = _CDistutilsViewCommands(self.fSingletons, self)
+        self.__fCmdMap = _CSetuptoolsViewCommands(self.fSingletons, self)
 
         self.__CreateGui()
 
@@ -155,7 +155,7 @@ class _CDistutilsView(wingview.CViewController):
 
     def GetDisplayTitle(self):
         """ Returns the title of this view suitable for display. """
-        return _("Distutils Panel")
+        return _("Setuptools Panel")
 
     def GetCommandMap(self):
         """ Get the command map object for this view. """
@@ -237,14 +237,14 @@ class _CDistutilsView(wingview.CViewController):
                 : [ ] (?P<message>.+?) $
         ''', flags=re.X|re.M|re.S)
 
-    distutils_build_in_place_action = '{}()'.format(
-        distutils_build_in_place.__name__)
+    setuptools_build_in_place_action = '{}()'.format(
+        setuptools_build_in_place.__name__)
 
     def _ProjectDir(self):
         my_proj = wingapi.gApplication.GetProject()
         if my_proj is None:
             wingapi.gApplication.ShowMessageDialog(
-                title='Distutils Build',
+                title='Setuptools Build',
                 text='You need to open a project first.',
                 sheet=True)
             return None
@@ -262,7 +262,7 @@ class _CDistutilsView(wingview.CViewController):
         setupDotPy = os.path.join(projectDir, 'setup.py')
         if not os.path.isfile(setupDotPy):
             wingapi.gApplication.ShowMessageDialog(
-                title='Distutils Build',
+                title='Setuptools Build',
                 text='You need to create a file setup.py in your project '
                      'directory first.',
                 sheet=True)
@@ -323,7 +323,7 @@ class _CDistutilsView(wingview.CViewController):
             self.fTerminateButton.setEnabled(False)
             self.fStatus.set_text('')
             wingapi.gApplication.ShowMessageDialog(
-                title='Distutils Build',
+                title='Setuptools Build',
                 text='Internal error: {}'.format(exc),
                 sheet=True)
 
@@ -348,7 +348,7 @@ class _CDistutilsView(wingview.CViewController):
         """ Remove all files produced by builds so far
 
             The command clean does remove files from the source directory:
-            this is a known limitation of Distutils. Thus we roll our own
+            this is a known limitation of Setuptools. Thus we roll our own
             hand-made heuristic.
         """
         self._Execute(setup_py_args=("clean", "-a"),
@@ -403,6 +403,6 @@ class _CDistutilsView(wingview.CViewController):
 # Register this panel type:  Note that this needs to be at the
 # very end of the module so that all the classes defined here
 # are already available
-_CDistutilsPanelDefn(wingapi.gApplication.fSingletons)
+_CSetuptoolsPanelDefn(wingapi.gApplication.fSingletons)
 
 
