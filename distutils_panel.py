@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
 import os, sys
-import fnmatch
+import re
 import wingapi
 from wingutils import location
 from wingutils import encoding_utils
@@ -340,8 +340,36 @@ class _CDistutilsView(wingview.CViewController):
         self._Execute(setup_py_args=("build_ext", "-i"))
 
     def _Clean(self):
-        """ Remove all files produced by builds so far """
-        self._Execute(setup_py_args=("clean", "-a"))
+        """ Remove all files produced by builds so far
+
+            The command clean does remove files from the source directory:
+            this is a known limitation of Distutils. Thus we roll our own
+            hand-made heuristic.
+        """
+        self._Execute(setup_py_args=("clean", "-a"),
+                      postprocess=self.clean_source_directory)
+
+    def clean_source_directory(self):
+        projectDir = self._ProjectDir()
+        if projectDir is None:
+            return
+        cleanees = []
+        for dirpath, dirnames, filenames in os.walk(projectDir):
+            for f in filenames:
+                full_path = os.path.join(dirpath, f)
+                m = re.search(r'\.(?:(c|cpp)|(o|so|pyd|dll|dylib))$', f)
+                if m:
+                    if m.lastindex == 2:
+                        cleanees.append(full_path)
+                    else:
+                        with open(full_path) as fo:
+                            if re.search(r'generated [ ]+ by [ ]+ cython',
+                                         fo.readline(), re.I|re.X):
+                                cleanees.append(full_path)
+        for f in cleanees:
+            self.fLog.AppendOutput(
+                "Removing %s\n" % os.path.relpath(f, projectDir))
+            os.unlink(f)
 
     def _Terminate(self):
         """ Called when the terminate button is clicked """
