@@ -235,20 +235,26 @@ class _CDistutilsView(wingview.CViewController):
     distutils_build_in_place_action = '{}()'.format(
         distutils_build_in_place.__name__)
 
-    def _Execute(self, setup_py_args, postprocess=None):
-        """ Execute setup.py with the given command line arguments """
-        import proj.project
-
+    def _ProjectDir(self):
         my_proj = wingapi.gApplication.GetProject()
         if my_proj is None:
             wingapi.gApplication.ShowMessageDialog(
                 title='Distutils Build',
                 text='You need to open a project first.',
                 sheet=True)
-            return
-        self.projectDir = os.path.dirname(my_proj.GetFilename())
+            return None
+        return os.path.dirname(my_proj.GetFilename())
 
-        setupDotPy = os.path.join(self.projectDir, 'setup.py')
+    def _Execute(self, setup_py_args, postprocess=None):
+        """ Execute setup.py with the given command line arguments """
+        import proj.project
+
+        projectDir = self._ProjectDir()
+        if projectDir is None:
+            return
+        my_proj = wingapi.gApplication.GetProject()
+
+        setupDotPy = os.path.join(projectDir, 'setup.py')
         if not os.path.isfile(setupDotPy):
             wingapi.gApplication.ShowMessageDialog(
                 title='Distutils Build',
@@ -279,7 +285,7 @@ class _CDistutilsView(wingview.CViewController):
         self.child_process = spawn.CChildProcess(
             cmd + setup_py_args,
             env=my_proj.GetEnvironment(setupDotPy),
-            child_pwd=self.projectDir,
+            child_pwd=projectDir,
             io_encoding=encoding, buffer_size=1)
         self.fBuildButton.setEnabled(False)
         self.fCleanButton.setEnabled(False)
@@ -353,7 +359,7 @@ class _CDistutilsView(wingview.CViewController):
 
         selected = tree.GetSelectedContent()
         if selected is not None and len(selected) != 0:
-            filename = os.path.join(self.projectDir, selected[0][0])
+            filename = os.path.join(self._ProjectDir(), selected[0][0])
             line = int(selected[0][1])
             col_txt = selected[0][2]
             col = int(col_txt) if col_txt else 0
