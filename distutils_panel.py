@@ -164,7 +164,7 @@ class _CDistutilsView(wingview.CViewController):
     ##########################################################################
 
     def __CreateGui(self):
-        self.fNotebook = wgtk.PopupNotebook()
+        self.fNotebook = wgtk.Notebook()
 
         self.fBuildButton = wgtk.IconButton(
             icon=wgtk.STOCK_EXECUTE, relief=wgtk.RELIEF_NONE,
