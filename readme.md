@@ -4,7 +4,7 @@
 
 ## Distutils panel
 
-This is a panel to run Distutils `setup.py` and to collect errors and warnings.
+This is a panel to run Distutils `setup.py` and to collect errors and warnings. At the moment it is limited to in-place builds.
 
 ### Build button
 
