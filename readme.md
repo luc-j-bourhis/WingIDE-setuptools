@@ -44,7 +44,8 @@ Warning: in the off-chance that you generated a C file from a pyx file and then 
 
 This panel add the following commands:
 
-- `distutils_build_in_place`: this is the same action performed by the `Build` button.
+- `distutils_build_in_place`: this is the same action performed by the `Build` button;
+- `distutils_clean_all`: this is the same action performed by the `Clean` button.
 
 A keyboard shortcut may be assigned to any of them in the usual way, through `Preferences > Keyboard > Custom Key Bindings`.
 

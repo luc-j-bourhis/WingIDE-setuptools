@@ -59,6 +59,11 @@ def distutils_build_in_place():
     view = wingapi.gApplication.fSingletons.fGuiMgr.ShowPanel(_kPanelID)
     view._Build()
 
+def distutils_clean_all():
+    """ Clean all files produced by `distutils_build_in_place` """
+    view = wingapi.gApplication.fSingletons.fGuiMgr.ShowPanel(_kPanelID)
+    view._Clean()
+
 # End of commands
 
 # Note that panel IDs must be globally unique so all user-provided panels
