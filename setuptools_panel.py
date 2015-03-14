@@ -235,6 +235,14 @@ class _CSetuptoolsView(wingview.CViewController):
         r''' ^ (?P<filename>[^:\n]+?) : (?P<line>\d+) : (?P<column>\d+)
                 : [ ] (?P<message>.+?) $
         ''', flags=re.X|re.M|re.S)
+    msvc_error_pattern = re.compile(
+        r''' ^
+              ([.][\\])?
+              (?P<filename>[^(\n]+?) \( (?P<line>\d+) \)
+              \s* : \s*
+              (?P<message>.+?)
+             $
+         ''', flags=re.X|re.M|re.S)
 
     setuptools_build_in_place_action = '{}()'.format(
         setuptools_build_in_place.__name__)
@@ -306,12 +314,18 @@ class _CSetuptoolsView(wingview.CViewController):
                 postprocess()
             self.fLogTabLabel.setStyleSheet("QLabel { color : black; }")
             contents = []
+            using_msvc = self.output.find('Microsoft Visual Studio') >= 0
             for m in self.python_error_pattern.finditer(self.output):
                 contents.append(
                     m.group('filename', 'line') + ('', m.group('message')))
-            for m in self.cython_error_pattern.finditer(self.output):
-                contents.append(
-                    m.group('filename', 'line', 'column', 'message'))
+            if using_msvc:
+                for m in self.msvc_error_pattern.finditer(self.output):
+                    contents.append(
+                        m.group('filename', 'line') + ('', m.group('message')))
+            else:
+                for m in self.cython_error_pattern.finditer(self.output):
+                    contents.append(
+                        m.group('filename', 'line', 'column', 'message'))
             self.fErrorList.set_contents(contents)
             self.fBuildButton.setEnabled(True)
             self.fCleanButton.setEnabled(True)
