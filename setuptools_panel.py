@@ -198,13 +198,12 @@ class _CSetuptoolsView(wingview.CViewController):
         top_hbox.pack_start(self.fCleanButton, expand=False)
         top_hbox.pack_start(self.fTerminateButton, expand=False)
 
-        tree = wgtk.SimpleTree(
+        tree = wgtk.SimpleList(
             [_("File"), _("Line"), _("Column"), _("Message")],
             plain_text=True)
         for i in (0, 1):
             tree.hideColumn(i)
-        wgtk.gui_connect(
-            tree, 'button-press-event', self._OnClickedErrorItem)
+        tree.clicked.connect(self._OnClickedErrorItem)
         wgtk.InitialShow(tree)
         self.fErrorList = tree
 
@@ -382,23 +381,16 @@ class _CSetuptoolsView(wingview.CViewController):
         self.fTerminateButton.setEnabled(False)
         self.fStatus.set_text('')
 
-    def _OnClickedErrorItem(self, tree, event):
+    def _OnClickedErrorItem(self, index):
         """ Called when the user clicks a line in the error list """
-        app = wingapi.gApplication
-        x, y, x_root, y_root, button, double = wgtk.GetButtonEventData(event)
-
-        # Always select the row that the pointer is over
-        tree.SelectAtClick(x, y)
-
-        selected = tree.GetSelectedContent()
+        selected = self.fErrorList.GetSelectedContent()
         if selected is not None and len(selected) != 0:
             filename = os.path.join(self._ProjectDir(), selected[0][0])
             line = int(selected[0][1])
             col_txt = selected[0][2]
             col = int(col_txt) if col_txt else 0
-            if button == wgtk.kLeftButton and not double:
-                doc = app.OpenEditor(filename)
-                doc.ScrollToLine(lineno=line-1, pos='center', select=1)
+            doc = wingapi.gApplication.OpenEditor(filename)
+            doc.ScrollToLine(lineno=line-1, pos='center', select=1)
 
 # Register this panel type:  Note that this needs to be at the
 # very end of the module so that all the classes defined here
