@@ -315,6 +315,14 @@ class _CSetuptoolsView(wingview.CViewController):
         def terminated(child_process):
             if postprocess is not None:
                 postprocess()
+
+            final_msg_tmpl = ('\n\n' + '='*8 +
+                              ' %%s: %s '%' '.join(setup_py_args) +
+                              '='*8 + '\n')
+            final_msg = final_msg_tmpl % (
+                'SUCCESS' if ret == 0 else 'FAILED')
+            self._log.AppendOutput(final_msg)
+
             self._log_tab_label.setStyleSheet("QLabel { color : black; }")
             contents = []
             using_msvc = self.output.find('Microsoft Visual Studio') >= 0
