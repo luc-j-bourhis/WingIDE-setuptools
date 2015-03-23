@@ -324,6 +324,7 @@ class _CSetuptoolsView(wingview.CViewController):
                 'SUCCESS' if ret == 0 else 'FAILED')
             self._log.AppendOutput(final_msg)
 
+            # Harvest errors with regex patterns
             self._log_tab_label.setStyleSheet("QLabel { color : black; }")
             contents = []
             using_msvc = self.output.find('Microsoft Visual Studio') >= 0
@@ -344,8 +345,15 @@ class _CSetuptoolsView(wingview.CViewController):
             self._terminate_button.setEnabled(False)
             self._status.set_text('')
 
+            # If setup.py failed but our patterns have not harvested any error,
+            # then it is likely we exposed an internal bug in distutils, or
+            # setuptools, or Cython, or any module setup.py relies upon.
+            # In that case, we switch to the Log tab and we scroll down,
+            # because this is the most likely place where to start
+            # investigating.
             if ret != 0 and not contents:
                 self._notebook.setCurrentIndex(1)
+                self._log._ScrollToBottom()
 
         def start_failed(child_process, exc):
             self._terminate_button.setEnabled(False)
