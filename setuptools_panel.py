@@ -316,6 +316,7 @@ class _CSetuptoolsView(wingview.CViewController):
             if postprocess is not None:
                 postprocess()
 
+            ret = self.child_process.GetExitCode()
             final_msg_tmpl = ('\n\n' + '='*8 +
                               ' %%s: %s '%' '.join(setup_py_args) +
                               '='*8 + '\n')
@@ -342,6 +343,9 @@ class _CSetuptoolsView(wingview.CViewController):
             self._clean_button.setEnabled(True)
             self._terminate_button.setEnabled(False)
             self._status.set_text('')
+
+            if ret != 0 and not contents:
+                self._notebook.setCurrentIndex(1)
 
         def start_failed(child_process, exc):
             self._terminate_button.setEnabled(False)
