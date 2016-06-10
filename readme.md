@@ -1,12 +1,8 @@
-# Various scripts for WingIDE
+# WingIDE tool for setuptools (and distutils)
 
-[WingIDE](http://wingware.com) is a powerful Python IDE with advanced scripting capabilities. This repository aims at collecting scripts I have written for it.
+[WingIDE](http://wingware.com) is a powerful Python IDE with advanced scripting capabilities. This repository features a custom panel which lets user build Python extensions. It supports extensions written in C or with Cython using Setuptools (or Distutils) `setup.py`. The panel collect errors and warnings in a table where they can be clicked to jump to the faulty line in the editor window. At the moment it is limited to in-place builds.
 
-## Setuptools panel
-
-This is a panel to build Python extensions written in C or with Cython using Setuptools (or Distutils) `setup.py` and to collect errors and warnings. At the moment it is limited to in-place builds.
-
-### Build button
+## Build button
 
 When the `Build` button is pressed, the following command is executed in the directory of the project file:
 
@@ -25,7 +21,7 @@ The panel currently detects Python errors, resulting from an incorrect `setup.py
 - clang/gcc,
 - MSVC.
 
-### Clean button
+## Clean button
 
 When the `Clean` button is pressed, the following command is executed in the directory of the project file:
 
@@ -37,7 +33,7 @@ This Setuptools command does not clean the files inside the source directory gen
 
 Warning: in the off-chance that you generated a C file from a Cython `*.pyx` file and then got rid of the latter to keep only the former, then you could loose that C file.
 
-### Commands
+## Commands
 
 This panel add the following commands:
 
