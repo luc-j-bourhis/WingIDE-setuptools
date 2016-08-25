@@ -31,7 +31,10 @@ import re
 import wingapi
 from wingutils import location
 from wingutils import encoding_utils
-from wingutils import spawn
+try:
+    from wingutils import spawn
+except ImportError:
+    from wingbase import spawn
 from guiutils import wgtk
 from guiutils import dockview
 from guiutils import wingview
