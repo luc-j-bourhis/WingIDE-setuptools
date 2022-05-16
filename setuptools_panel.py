@@ -29,11 +29,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 import os, sys
 import re
 import wingapi
-from wingutils import location
 from wingutils import encoding_utils
 try:
+    from wingutils import location
     from wingutils import spawn
 except ImportError:
+    from wingbase import location
     from wingbase import spawn
 from guiutils import wgtk
 from guiutils import dockview
