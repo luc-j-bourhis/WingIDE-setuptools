@@ -50,7 +50,7 @@ _AI = wingapi.CArgInfo
 # Write any text which may need to be translated as _("....")
 import gettext
 _ = gettext.translation('scripts_setuptools_panel',
-                        fallback = 1).ugettext
+                        fallback = 1).gettext
 
 # This special attribute is used so that the script manager can also
 # translate docstrings for the commands found here
@@ -278,8 +278,7 @@ class _CSetuptoolsView(wingview.CViewController):
             wingapi.gApplication.ShowMessageDialog(
                 title='Setuptools Build',
                 text='You need to create a file setup.py in your project '
-                     'directory first.',
-                sheet=True)
+                     'directory first.')
             return
 
         save_mgr = self.fSingletons.fGuiMgr.fSaveMgr
@@ -298,11 +297,11 @@ class _CSetuptoolsView(wingview.CViewController):
         encoding = encoding_utils.kDefaultConsoleOutputEncoding
 
         # buffer_size = 1 for for line mode
-        cmd = (my_proj.GetPythonExecutable(setup_dot_py), "-u", "setup.py")
+        cmd = [my_proj.GetPythonExecutable(setup_dot_py), "-u", "setup.py"]
         self.output = ""
         self._log._Clear()
         self.child_process = spawn.CChildProcess(
-            cmd + setup_py_args,
+            cmd + list(setup_py_args),
             env=my_proj.GetEnvironment(setup_dot_py),
             child_pwd=projectDir,
             io_encoding=encoding, buffer_size=1)
